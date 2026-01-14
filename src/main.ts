@@ -28,17 +28,40 @@ const drawPointHard=(length:number,width:number,tipLength:number,p:p5)=>{
   p.rectMode(p.CENTER);
   p.rect(0,-(length-tipLength)/2,width,length-tipLength);
   p.beginShape();
-  p.vertex(-width/2,-(length-tipLength));
-  p.vertex(width/2,-(length-tipLength));
+  p.vertex(-width,-(length-tipLength));
+  p.vertex(width,-(length-tipLength));
   p.vertex(0,-length);
   p.endShape(p.CLOSE);
   p.pop();
 
 }
 
+const drawHandBaseMecha=(r:number,p:p5)=>{
+  p.push();
+  p.stroke(0,252,252);
+  p.fill(100,100,100);
+  p.circle(0,0,r*2);
+  p.fill(50,50,50);
+  p.circle(0,0,r);
+  p.pop();
 
+}
 
+const drawClockNumber=(Tx:number,Ty:number,radius:number,p:p5)=>{
+  p.push();
+  p.fill(0,252,0);
+  p.stroke(0,0,0);
+  p.textAlign(p.CENTER,p.CENTER);
+  p.textSize(24);
 
+  for (let n=1;n<=12;n++){
+    const angleT=p.TWO_PI*n/12-p.HALF_PI;
+    const Nx=Tx+p.cos(angleT)*radius;
+    const Ny=Ty+p.sin(angleT)*radius;
+    p.text(n.toString(),Nx,Ny);
+  }
+  p.pop();
+}
   
 const sketch = (p: p5) => {
   p.setup = () => {
@@ -60,7 +83,9 @@ let cg=0;
     p.background(0);
     p.push();
     p.stroke(0,0,0);
-    p.ellipse(630,315,500,500);
+    let Sx=p.width/2;
+    let Sy=p.height/2;
+    p.ellipse(Sx,Sy,500,500);
     p.pop();
 
     p.push();
@@ -81,7 +106,7 @@ let cg=0;
     let ay=p.height/2
     p.translate(ax,ay);
     p.rotate(angle2);
-    drawPointHard(200,8,15,p);
+    drawPointHard(200,4,15,p);
     p.pop();
     angle2+=0.025;
 
@@ -92,11 +117,20 @@ let cg=0;
     let cy=p.height/2
     p.translate(cx,cy);
     p.rotate(angle3);
-    drawPointHard(150,8,15,p);
+    drawPointHard(150,4,15,p);
+    p.fill(150);
+    drawHandBaseMecha(6,p);
     p.pop();
     angle3+=0.01
 
-    
+    p.push();
+    const tx=p.width/2;
+    const ty=p.height/2;
+    drawClockNumber(tx,ty,220,p);
+    p.pop();
+
+  
+
     p.push();
     p.translate(0,0);
     p.rotate(ag);
@@ -121,6 +155,7 @@ let cg=0;
     p.pop();
     cg+=0.01;
 
+    
 
 
     
