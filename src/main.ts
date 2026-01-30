@@ -47,90 +47,159 @@ const drawHandBaseMecha=(r:number,p:p5)=>{
 
 }
 
-const drawClockNumber=(Tx:number,Ty:number,radius:number,p:p5)=>{
-  p.push();
-  p.fill(0,252,0);
-  p.stroke(0,0,0);
-  p.textAlign(p.CENTER,p.CENTER);
-  p.textSize(24);
+const roman = ["XII","I","II","III","IV","V","VI","VII","VIII","IX","X","XI"];
 
-  for (let n=1;n<=12;n++){
-    const angleT=p.TWO_PI*n/12-p.HALF_PI;
-    const Nx=Tx+p.cos(angleT)*radius;
-    const Ny=Ty+p.sin(angleT)*radius;
-    p.text(n.toString(),Nx,Ny);
+
+const drawClockNumber=(radius:number,p:p5)=>{
+  p.push();
+  p.fill(90,70,50);
+  p.noStroke();
+  p.strokeWeight(1);
+  p.textAlign(p.CENTER,p.CENTER);
+  p.textSize(30);
+
+  for (let i=0;i<12;i++){
+    const angleT=p.TWO_PI*i/12-p.HALF_PI;
+    const Nx=p.cos(angleT)*radius;
+    const Ny=p.sin(angleT)*radius;
+    p.text(roman[i],Nx,Ny);
+  }
+  p.pop();
+}
+
+const drawInnerDecoration=(r:number,p:p5)=>{
+  p.push();
+  p.noFill();
+  p.stroke(100,80,40);
+  p.strokeWeight(2)
+  for(let i=0;i<6;i++){
+    p.circle(0,0,r-i*20);
   }
   p.pop();
 }
   
 const sketch = (p: p5) => {
   p.setup = () => {
+
     const canvas = p.createCanvas(p.windowWidth-20,p.windowHeight );
     canvas.parent("app");
     p.background(0);
   };
    
+const drawMetalFace=(r:number,p:p5)=>{
+  p.push();
+  p.noStroke();
+  for(let i=r; i>0;i--){
+    let shade=p.map(i,0,r,190,200);
+    p.fill(shade,shade*0.97,shade*0.9);
+    p.circle(0,0,i*2);
+  }
+  p.pop();
+}
+
+const drawBrassRing=(r:number,p:p5)=>{
+  p.push();
+  p.noFill();
+  p.stroke(120,110,90);
+  p.strokeWeight(25);
+  p.circle(0,0,r*2);
+  p.pop();
+}
+
+const drawRivets=(r:number,p:p5)=>{
+  p.push();
+  for(let i=0;i<12;i++){
+    p.push();
+    p.rotate(p.TWO_PI*i/12);
+    p.fill(220);
+    p.stroke(150);
+    p.circle(0,-r,10);
+    p.pop();
+  }
+p.pop();
+}
+
+const drawRadialLines=(r:number,p:p5)=>{
+  p.push();
+  p.stroke(30,30,30,40);
+  for (let i=0;i<60;i++){
+    p.rotate(p.TWO_PI/60);
+    p.line(0,-r,0,-r+10);
+  }
+  p.pop();
+}
 
 
-let angle1=0;
-let angle2=0;
-let angle3=0;
 let ag=0;
 let bg=0;
 let cg=0;
+let dg=0;
   p.draw = () => {
-   
     p.background(0);
+
+
+    const h=p.hour()%12;
+    const m=p.minute();
+    const s=p.second();
+    const ms=p.millis();
+
+    const smoothSec=s+ms/1000;
+    const smoothMin=m+smoothSec/60;
+    const smoothHour=h+smoothMin/60;
+
+    const angleSec=p.TWO_PI*s/60;
+    const angleMin=p.TWO_PI*smoothMin/60;
+    const angleHour=p.TWO_PI*smoothHour/12;    
+
+    
     p.push();
-    p.stroke(0,0,0);
-    let Sx=p.width/2;
-    let Sy=p.height/2;
-    p.ellipse(Sx,Sy,500,500);
+    p.translate(p.width/2,p.height/2);
+
+    drawMetalFace(250,p);
+    drawBrassRing(250,p);
+    drawInnerDecoration(200,p);
+    drawRivets(235,p);
+    drawClockNumber(210,p);
+    drawRadialLines(240,p);
+
+
     p.pop();
 
     p.push();
-    p.stroke(0,252,0);
+    p.stroke(100,40,20);
     p.strokeWeight(3);
     let zx= p.width/2
     let zy= p.height/2
     p.translate(zx,zy);
-    p.rotate(angle1);
+    p.rotate(angleSec-p.HALF_PI);
     drawMechaHard(220,2,p);
     p.pop();
-    angle1+=0.05;
+    
 
     p.push();
-    p.stroke(0,0,252);
+    p.stroke(120,80,30);
     p.strokeWeight(3);
     let ax=p.width/2
     let ay=p.height/2
     p.translate(ax,ay);
-    p.rotate(angle2);
+    p.rotate(angleMin-p.HALF_PI);
     drawPointHard(200,4,15,p);
     p.pop();
-    angle2+=0.025;
+    
 
+    
     p.push();
-    p.stroke(252,0,0);
+    p.stroke(60,30,20);
     p.strokeWeight(3);
     let cx=p.width/2
     let cy=p.height/2
     p.translate(cx,cy);
-    p.rotate(angle3);
+    p.rotate(angleHour-p.HALF_PI);
     drawPointHard(150,4,15,p);
     p.fill(150);
     drawHandBaseMecha(6,p);
     p.pop();
-    angle3+=0.01
-
-    p.push();
-    const tx=p.width/2;
-    const ty=p.height/2;
-    drawClockNumber(tx,ty,220,p);
-    p.pop();
-
   
-
     p.push();
     p.translate(0,0);
     p.rotate(ag);
@@ -155,7 +224,15 @@ let cg=0;
     p.pop();
     cg+=0.01;
 
-    
+    p.push();
+    p.translate(50,450);
+    p.rotate(dg);
+    p.stroke(80,0,0,);
+    drawGear(90,100,16,p);
+    p.pop();
+    dg+=0.005;
+
+   
 
 
     
