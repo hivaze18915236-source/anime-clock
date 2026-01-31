@@ -4,16 +4,19 @@ const drawGear=(innerR:number,outerR:number,teeth:number,p:p5,type:number=0)=>{
     p.push();
     p.rotate(p.frameCount*0.01);
 
-    for (let r=outerR;r>innerR*0.6;r--){
-      const shade=p.map(r,innerR*0.6,outerR,220,255);
-      p.fill(shade,shade*0.9,shade*0.7);
-      p.noStroke();
-      p.circle(0,0,r*2);
-    }
+    for (let r = outerR; r > innerR * 0.6; r--) {
+    const c1 = p.color(220, 220, 220); 
+    const c2 = p.color(150, 150, 150); 
+    const col = p.lerpColor(c1, c2, (r - innerR * 0.6) / (outerR - innerR * 0.6));
+    p.fill(col);
+    p.noStroke();
+    p.circle(0, 0, r * 2);
+  }
     p.beginShape();
-    p.stroke(200,200,210);
-    p.strokeWeight(2);
-    p.fill(240,240,245);
+    p.stroke(180,180,190);
+    p.strokeWeight(6);
+    p.fill(220,220,225);
+    p.circle(0,0,innerR*1.2);
 
     for (let i=0;i<teeth*2;i++){
       const angleG = (i * p.TWO_PI) / (teeth * 2);
@@ -30,7 +33,14 @@ const drawGear=(innerR:number,outerR:number,teeth:number,p:p5,type:number=0)=>{
     }
     p.vertex(p.cos(angleG) * radiusG, p.sin(angleG) * radiusG);
   }
-  p.endShape(p.CLOSE);
+    p.endShape(p.CLOSE);
+
+    p.stroke(255, 255, 255, 50);
+    p.strokeWeight(1);
+for (let i = 0; i < 10; i++) {
+    p.line(0, 0, p.cos(i * p.TWO_PI / 10) * outerR, p.sin(i * p.TWO_PI / 10) * outerR);
+  }
+
       
   
 
@@ -53,10 +63,14 @@ const drawGear=(innerR:number,outerR:number,teeth:number,p:p5,type:number=0)=>{
     p.strokeWeight(3);
     p.circle(0,0,innerR*0.35);
 
+    p.noStroke();
+    p.fill(255, 255, 255, 30);
+    p.circle(-20, -20, 40);
+
    
     p.pop();
 
-  }
+   }
 
 const drawMouseGear=(mx:number,my:number,rInner:number,rOuter:number,teeth:number,p:p5)=>{
   p.push();
@@ -83,7 +97,7 @@ const drawSteampunkHand = (length:number, width:number, p:any) => {
   p.vertex(0,0);
   p.endShape(p.CLOSE);
 
-  
+  p.noStroke();
   for (let i=1;i<=3;i++){
     const y = -length*i/4;
     p.ellipse(-width*0.15, y, width*0.15, width*0.05);
@@ -146,22 +160,41 @@ const drawInnerDecoration=(r:number,p:p5)=>{
 
   p.pop();
 }
+
   
 const sketch = (p: p5) => {
-  p.setup = () => {
+  interface Star {
+  x: number;
+  y: number;
+  size: number;
+  baseAlpha: number; 
+  speed: number;     
+}
 
-    const canvas = p.createCanvas(p.windowWidth-20,p.windowHeight );
-    canvas.parent("app");
-    p.background(0);
-  };
+let stars: Star[] = [];
+  p.setup = () => {
+  const canvas = p.createCanvas(p.windowWidth-20, p.windowHeight);
+  canvas.parent("app");
+  for (let i = 0; i < 1000; i++) {
+    stars.push({
+      x: p.random(p.width),
+      y: p.random(p.height),
+      size: p.random(1, 3),
+      baseAlpha: p.random(50, 200),
+      speed: p.random(0.5, 2),
+    });
+  }
+};
    
 const drawMetalFace=(r:number,p:p5)=>{
   p.push();
-  p.noStroke();
-  for(let i=r; i>0;i--){
-    let shade=p.map(i,0,r,235,200);
-    p.fill(shade,shade*0.97,shade*0.9);
-    p.circle(0,0,i*2);
+ for (let i = r; i > 0; i--) {
+    const c1 = p.color(255, 255, 255);
+    const c2 = p.color(180, 160, 120);
+    const col = p.lerpColor(c1, c2, i / r);
+    p.fill(col);
+    p.noStroke();
+    p.circle(0, 0, i * 2);
   }
   p.pop();
 }
@@ -205,9 +238,17 @@ let cg=0;
 let dg=0;
 let eg=0;
 let fg=0;
+let gg=0;
+let hg=0;
   p.draw = () => {
     p.background(0);
 
+     p.noStroke();
+  for (let star of stars) {
+    const alpha = star.baseAlpha + p.sin(p.frameCount * 0.05 * star.speed) * 50;
+    p.fill(255, 255, 200, alpha);
+    p.circle(star.x, star.y, star.size);
+  }
     const h=p.hour()%12; 
     const m=p.minute(); 
     const s=p.second(); 
@@ -320,7 +361,7 @@ let fg=0;
     p.stroke(80,0,0);
     drawGear(90,100,16,p,2);
     p.pop();
-    eg-=0.02;
+    eg-=0.15;
 
     p.push();
     p.translate(1200,400);
@@ -329,6 +370,22 @@ let fg=0;
     drawGear(90,100,16,p,0);
     p.pop();
     fg+=0.005;
+
+    p.push();
+    p.translate(700,-40);
+    p.rotate(dg);
+    p.stroke(80,0,0);
+    drawGear(90,100,16,p,1);
+    p.pop();
+    gg+=0.1;
+
+     p.push();
+    p.translate(700,700);
+    p.rotate(dg);
+    p.stroke(80,0,0);
+    drawGear(90,100,16,p,2);
+    p.pop();
+    hg-=0.2;
 
    p.push();
    drawMouseGear(300, 150, 40, 60, 12, p); 
