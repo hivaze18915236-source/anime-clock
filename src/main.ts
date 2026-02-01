@@ -2,11 +2,10 @@ import p5 from "p5";
 import './style.css';
 const drawGear=(innerR:number,outerR:number,teeth:number,p:p5,type:number=0)=>{
     p.push();
-    p.rotate(p.frameCount*0.01);
 
     for (let r = outerR; r > innerR * 0.6; r--) {
-    const c1 = p.color(220, 220, 220); 
-    const c2 = p.color(150, 150, 150); 
+    const c1 = p.color(250, 250, 250); 
+    const c2 = p.color(140, 140, 140); 
     const col = p.lerpColor(c1, c2, (r - innerR * 0.6) / (outerR - innerR * 0.6));
     p.fill(col);
     p.noStroke();
@@ -88,7 +87,15 @@ const drawSteampunkHand = (length:number, width:number, p:any) => {
 
   p.circle(0,0,width*1.5);
 
- 
+  p.fill(220,240,190);
+  p.stroke(255,220,150);
+  p.strokeWeight(2);
+  p.circle(0,0,width*1.5);
+
+  p.fill(180,150,80);
+  p.stroke(220,190,120);
+  p.strokeWeight(2);
+
   p.beginShape();
   p.vertex(0,0);
   p.vertex(-width*0.3, -length*0.7);
@@ -106,9 +113,10 @@ const drawSteampunkHand = (length:number, width:number, p:any) => {
 
   
   p.noFill();
-  p.stroke(255,220,150,100);
+  p.stroke(255,255,255,100);
   p.strokeWeight(1);
-  p.line(0, -length, 0, -length*0.85);
+  p.line(0, -length*0.1, 0, -length*0.85);
+
 
 
   p.pop();
@@ -116,8 +124,8 @@ const drawSteampunkHand = (length:number, width:number, p:any) => {
 
 const drawHandBaseMecha=(r:number,p:p5)=>{
   p.push();
-  p.stroke(0,252,252);
-  p.fill(100,100,100);
+  p.stroke(240,240,180);
+  p.fill(160,130,70);
   p.circle(0,0,r*2);
   p.fill(50,50,50);
   p.circle(0,0,r);
@@ -147,15 +155,17 @@ const drawClockNumber=(radius:number,p:p5)=>{
 
 const drawInnerDecoration=(r:number,p:p5)=>{
   p.push();
-  p.noFill();
-  p.stroke(100,80,40);
-  p.strokeWeight(2)
-  for(let i=0;i<6;i++){
-    p.circle(0,0,r-i*20);
-    let c1=p.color(255,215,0);
-    let c2=p.color(255,250,200);
-    p.fill(p.lerpColor(c2,c1,i/r));
+   for (let i = 0; i < 6; i++) {
+    const rr = r - i * 50;
 
+    
+    const shade = p.map(i, 0, 5, 180, 40);
+
+    p.fill(shade, shade * 0.95, shade * 0.85); 
+    p.stroke(120, 100, 60);
+    p.strokeWeight(2);
+
+    p.circle(0, 0, rr);
   }
 
   p.pop();
@@ -202,7 +212,7 @@ const drawMetalFace=(r:number,p:p5)=>{
 const drawBrassRing=(r:number,p:p5)=>{
   p.push();
   p.noFill();
-  p.stroke(120,110,90);
+  p.stroke(150,120,60);
   p.strokeWeight(25);
   p.circle(0,0,r*2);
   p.pop();
@@ -213,8 +223,8 @@ const drawRivets=(r:number,p:p5)=>{
   for(let i=0;i<12;i++){
     p.push();
     p.rotate(p.TWO_PI*i/12);
-    p.fill(220);
-    p.stroke(150);
+    p.fill(240);
+    p.stroke(200);
     p.circle(0,-r,10);
     p.pop();
   }
@@ -240,6 +250,8 @@ let eg=0;
 let fg=0;
 let gg=0;
 let hg=0;
+let ig=0;
+let jg=0;
   p.draw = () => {
     p.background(0);
 
@@ -258,12 +270,12 @@ let hg=0;
     const smoothMin=m+smoothSec/60; 
     const smoothHour=h+smoothMin/60; 
     const t=p.millis()/1000; 
-    const vibration=p.sin(t*20)*0.02;
-    const glitch=p.noise(t*0.5)*0.3; 
+    const vibration=p.sin(t*0.4)*0.02;
+    const glitch=p.noise(t*0.1)*0.3; 
 
     let shock=0; 
-    if (p.random()<0.005){ 
-      shock=-0.0001; }
+    if (p.random()<0.0005){ 
+      shock=-0.00001; }
 
     
     const angleSec=((p.TWO_PI*smoothSec/60 )*vibration+glitch+shock)*8; 
@@ -293,7 +305,7 @@ let hg=0;
 
 
     p.push();
-    p.stroke(180,220,210);
+    p.stroke(180,200,190);
     p.strokeWeight(1);
     p.translate(px,py);
     p.rotate(angleSec);
@@ -303,7 +315,7 @@ let hg=0;
     
 
     p.push();
-    p.stroke(180,200,210);
+    p.stroke(180,200,180);
     p.strokeWeight(3);
     p.translate(px,py);
     p.rotate(angleMin);
@@ -335,17 +347,17 @@ let hg=0;
     p.translate(1200,710);
     p.rotate(bg);
     p.stroke(2,0,0);
-    drawGear(90,100,16,p,1);
+    drawGear(100,120,20,p,1);
     p.pop();
-    bg+=0.005;
+    bg-=0.005;
 
     p.push();
     p.translate(1110,50);
     p.rotate(cg);
     p.stroke(80,0,0);
-    drawGear(90,100,16,p,2);
+    drawGear(50,90,12,p,2);
     p.pop();
-    cg+=0.01;
+    cg-=0.01;
 
     p.push();
     p.translate(10,700);
@@ -357,7 +369,7 @@ let hg=0;
 
     p.push();
     p.translate(100,400);
-    p.rotate(dg);
+    p.rotate(eg);
     p.stroke(80,0,0);
     drawGear(90,100,16,p,2);
     p.pop();
@@ -365,7 +377,7 @@ let hg=0;
 
     p.push();
     p.translate(1200,400);
-    p.rotate(dg);
+    p.rotate(fg);
     p.stroke(80,0,0);
     drawGear(90,100,16,p,0);
     p.pop();
@@ -373,19 +385,37 @@ let hg=0;
 
     p.push();
     p.translate(700,-40);
-    p.rotate(dg);
+    p.rotate(gg);
     p.stroke(80,0,0);
-    drawGear(90,100,16,p,1);
+    drawGear(100,110,16,p,1);
     p.pop();
-    gg+=0.1;
+    gg-=0.01;
 
-     p.push();
+    p.push();
     p.translate(700,700);
-    p.rotate(dg);
+    p.rotate(hg);
     p.stroke(80,0,0);
     drawGear(90,100,16,p,2);
     p.pop();
-    hg-=0.2;
+    hg-=0.02;
+
+    p.push();
+    p.translate(40,200);
+    p.rotate(ig);
+    p.stroke(80,0,0);
+    drawGear(80,90,10,p,1);
+    p.pop();
+    ig+=0.025;
+
+    p.push();
+    p.translate(400,700);
+    p.rotate(jg);
+    p.stroke(80,0,0);
+    drawGear(70,85,6,p,0);
+    p.pop();
+    jg-=0.02;
+
+
 
    p.push();
    drawMouseGear(300, 150, 40, 60, 12, p); 
